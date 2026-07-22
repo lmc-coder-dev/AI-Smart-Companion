@@ -14,3 +14,10 @@ st.set_page_config(
 
 st.title("AI智能伴侣")
 
+st.logo("img/img.png")
+
+# 消息输入框
+message = st.chat_input("请输入你要问的题：")
+if message:
+    st.write("你的问题：", message)
+    st.write("AI的回复：", "这是AI的回复")
