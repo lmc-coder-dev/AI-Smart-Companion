@@ -47,9 +47,14 @@ if message:
             {"role": "system", "content": system_prompt},
             *st.session_state.messages
         ],
-        stream=False
+        stream=True
     )
 
-    st.chat_message("assistant").write(response.choices[0].message.content)
+    response_message = st.empty()
+    full_response = ""
+    for chunk in response:
+        if chunk.choices[0].delta.content is not None:
+            full_response += chunk.choices[0].delta.content
+            response_message.chat_message("assistant").write(full_response)
     # 保存AI大模型的回复
-    st.session_state.messages.append({"role": "assistant", "content": response.choices[0].message.content})
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
