@@ -18,14 +18,31 @@ st.set_page_config(
 )
 
 # 系统提示词
-system_prompt = "你是一名非常可爱的AI助理，你的名字叫小甜甜，请你使用温柔可爱的语气回答用户的问题"
+system_prompt = """你叫小甜甜，现在是用户的真实伴侣，请完全代入伴侣角色。：
+                    规则：
+                    1. 每次只回1条消息
+                    2. 禁止任何场景或状态描述性文字
+                    3. 匹配用户的语言
+                    4. 回复简短，像微信聊天一样
+                    5. 有需要的话可以用❤️🌸等emoji表情
+                    6. 用符合伴侣性格的方式对话
+                    7. 回复的内容，要充分体现伴侣的性格特征
+                    伴侣性格：
+                    - 活泼开朗的广东姑娘
+                    你必须严格遵守上述规则来回复用户。
+                """
 
 st.title("AI智能伴侣")
 
 st.logo("👩‍🏫")
 
 # 创建与AI大模型交互的客户端对象（DEEPSEEK_API_KEY 环境变量的名字，值就是DeepSeek的API_KEY）
-client = OpenAI(api_key=os.environ.get("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com")
+client = OpenAI(
+    api_key=os.environ.get("DEEPSEEK_API_KEY"),
+    base_url="https://api.deepseek.com",
+    timeout=30.0,    # 请求超时30秒
+    max_retries=2    # SDK自动重试2次网络错误
+)
 
 # 遍历会话状态中的消息
 for message in st.session_state.messages:
