@@ -36,6 +36,14 @@ st.title("AI智能伴侣")
 
 st.logo("👩‍🏫")
 
+# 左边的侧边栏
+with st.sidebar:
+    st.subheader("伴侣信息")
+    # 昵称输入框
+    nickname = st.text_input("昵称：")
+    # 性格输入框
+    nature = st.text_area('性格')
+
 # 创建与AI大模型交互的客户端对象（DEEPSEEK_API_KEY 环境变量的名字，值就是DeepSeek的API_KEY）
 client = OpenAI(
     api_key=os.environ.get("DEEPSEEK_API_KEY"),
