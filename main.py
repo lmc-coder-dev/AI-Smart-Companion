@@ -6,6 +6,14 @@ from openai import OpenAI
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# 昵称
+if "nick_name" not in st.session_state:
+    st.session_state.nick_name = "小甜甜"
+
+# 性格
+if "nature" not in st.session_state:
+    st.session_state.nature = "活泼开朗的广东姑娘"
+
 # 设置页面的配置项
 st.set_page_config(
     page_title="AI智能伴侣",
@@ -18,7 +26,7 @@ st.set_page_config(
 )
 
 # 系统提示词
-system_prompt = """你叫小甜甜，现在是用户的真实伴侣，请完全代入伴侣角色。：
+system_prompt = """你叫%s，现在是用户的真实伴侣，请完全代入伴侣角色。：
                     规则：
                     1. 每次只回1条消息
                     2. 禁止任何场景或状态描述性文字
@@ -28,7 +36,7 @@ system_prompt = """你叫小甜甜，现在是用户的真实伴侣，请完全�
                     6. 用符合伴侣性格的方式对话
                     7. 回复的内容，要充分体现伴侣的性格特征
                     伴侣性格：
-                    - 活泼开朗的广东姑娘
+                    - %s
                     你必须严格遵守上述规则来回复用户。
                 """
 
@@ -40,9 +48,13 @@ st.logo("👩‍🏫")
 with st.sidebar:
     st.subheader("伴侣信息")
     # 昵称输入框
-    nickname = st.text_input("昵称：")
+    nickname = st.text_input("昵称：",placeholder="请输入昵称",value=st.session_state.nick_name)
+    if nickname:
+        st.session_state.nick_name = nickname
     # 性格输入框
-    nature = st.text_area('性格')
+    nature = st.text_area('性格', placeholder="请输入伴侣性格", value=st.session_state.nature)
+    if nature:
+        st.session_state.nature = nature
 
 # 创建与AI大模型交互的客户端对象（DEEPSEEK_API_KEY 环境变量的名字，值就是DeepSeek的API_KEY）
 client = OpenAI(
@@ -69,7 +81,7 @@ if message:
     response = client.chat.completions.create(
         model="deepseek-chat",
         messages=[
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": system_prompt % (st.session_state.nick_name, st.session_state.nature)},
             *st.session_state.messages
         ],
         stream=True
