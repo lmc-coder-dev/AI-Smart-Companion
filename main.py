@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from openai import OpenAI
 from datetime import datetime
+import json
 
 # 初始化聊天信息
 if "messages" not in st.session_state:
@@ -17,7 +18,27 @@ if "nature" not in st.session_state:
 
 # 会话标识
 if "current_session" not in st.session_state:
-    st.session_state.current_session = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
+    st.session_state.current_session = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+
+def save_session():
+    # 1. 保存当前会话信息
+    if st.session_state.current_session:
+        # 构建新的会话对象
+        session_data = {
+            "nick_name": st.session_state.nick_name,
+            "nature": st.session_state.nature,
+            "current_session": st.session_state.current_session,
+            "messages": st.session_state.messages
+        }
+
+        # 如果 sessions 目录不存在，则创建
+        if not os.path.exists("sessions"):
+            os.mkdir("sessions")
+
+    # 保存会话数据
+    with open(f"sessions/{st.session_state.current_session}.json", "w", encoding="utf-8") as f:
+        json.dump(session_data, f, ensure_ascii=False, indent=2)
+
 
 # 设置页面的配置项
 st.set_page_config(
@@ -51,6 +72,14 @@ st.logo("👩‍🏫")
 
 # 左边的侧边栏
 with st.sidebar:
+    # 会话信息
+    st.subheader("AI会话面板")
+
+    if st.button("新建会话", width="stretch", icon="📝"):
+        save_session()
+
+
+
     st.subheader("伴侣信息")
     # 昵称输入框
     nickname = st.text_input("昵称：",placeholder="请输入昵称",value=st.session_state.nick_name)
