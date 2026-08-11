@@ -4,21 +4,10 @@ from openai import OpenAI
 from datetime import datetime
 import json
 
-# 初始化聊天信息
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
-# 昵称
-if "nick_name" not in st.session_state:
-    st.session_state.nick_name = "小甜甜"
-
-# 性格
-if "nature" not in st.session_state:
-    st.session_state.nature = "活泼开朗的广东姑娘"
-
-# 会话标识
-if "current_session" not in st.session_state:
-    st.session_state.current_session = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+# 生成会话标识函数
+def generate_session_name():
+    return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 def save_session():
     # 1. 保存当前会话信息
@@ -39,6 +28,21 @@ def save_session():
     with open(f"sessions/{st.session_state.current_session}.json", "w", encoding="utf-8") as f:
         json.dump(session_data, f, ensure_ascii=False, indent=2)
 
+# 初始化聊天信息
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# 昵称
+if "nick_name" not in st.session_state:
+    st.session_state.nick_name = "小甜甜"
+
+# 性格
+if "nature" not in st.session_state:
+    st.session_state.nature = "活泼开朗的广东姑娘"
+
+# 会话标识
+if "current_session" not in st.session_state:
+    st.session_state.current_session = generate_session_name()
 
 # 设置页面的配置项
 st.set_page_config(
@@ -78,7 +82,12 @@ with st.sidebar:
     if st.button("新建会话", width="stretch", icon="📝"):
         save_session()
 
-
+        # 2. 创建新的会话
+        if st.session_state.messages:
+            st.session_state.messages = []
+            st.session_state.current_session = generate_session_name()
+            save_session()
+            st.rerun()
 
     st.subheader("伴侣信息")
     # 昵称输入框
