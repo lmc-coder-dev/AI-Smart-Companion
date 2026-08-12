@@ -28,6 +28,20 @@ def save_session():
     with open(f"sessions/{st.session_state.current_session}.json", "w", encoding="utf-8") as f:
         json.dump(session_data, f, ensure_ascii=False, indent=2)
 
+
+# 加载所有的会话列表信息
+def load_sessions():
+    session_list = []
+
+    # 加载sessions目录下的文件
+    if os.path.exists("sessions"):
+        file_list = os.listdir("sessions")
+        for filename in file_list:
+            if filename.endswith(".json"):
+                session_list.append(filename[:-5])
+
+    return session_list
+
 # 初始化聊天信息
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -88,6 +102,20 @@ with st.sidebar:
             st.session_state.current_session = generate_session_name()
             save_session()
             st.rerun()
+
+    # 会话历史
+    st.text("会话历史")
+    session_list = load_sessions()
+    for session in session_list:
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            # 加载会话信息
+            if st.button(session, width="stretch", icon="📄", key=f"load_{session}"):
+                pass
+        with col2:
+            # 删除会话信息
+            if st.button("", width="stretch", icon="❌", key=f"delete_{session}"):
+                pass
 
     st.subheader("伴侣信息")
     # 昵称输入框
