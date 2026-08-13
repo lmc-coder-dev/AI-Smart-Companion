@@ -53,10 +53,23 @@ if "nick_name" not in st.session_state:
 # 性格
 if "nature" not in st.session_state:
     st.session_state.nature = "活泼开朗的广东姑娘"
-
 # 会话标识
 if "current_session" not in st.session_state:
     st.session_state.current_session = generate_session_name()
+
+# 加载指定的会话信息
+def load_session(session_name):
+    try:
+        if os.path.exists(f"sessions/{session_name}.json"):
+            # 读取会话数据
+            with open(f"sessions/{session_name}.json", "r", encoding="utf-8") as f:
+                session_data = json.load(f)
+                st.session_state.messages = session_data["messages"]
+                st.session_state.nick_name = session_data["nick_name"]
+                st.session_state.nature = session_data["nature"]
+                st.session_state.current_session = session_name
+    except Exception:
+        st.error("加载会话失败！")
 
 # 设置页面的配置项
 st.set_page_config(
@@ -94,14 +107,12 @@ with st.sidebar:
     st.subheader("AI会话面板")
 
     if st.button("新建会话", width="stretch", icon="📝"):
-        save_session()
-
         # 2. 创建新的会话
         if st.session_state.messages:
-            st.session_state.messages = []
-            st.session_state.current_session = generate_session_name()
             save_session()
-            st.rerun()
+        st.session_state.messages = []
+        st.session_state.current_session = generate_session_name()
+        st.rerun()
 
     # 会话历史
     st.text("会话历史")
@@ -110,8 +121,9 @@ with st.sidebar:
         col1, col2 = st.columns([4, 1])
         with col1:
             # 加载会话信息
-            if st.button(session, width="stretch", icon="📄", key=f"load_{session}"):
-                pass
+            if st.button(session, width="stretch", icon="📄", key=f"load_{session}" ,type="primary" if session == st.session_state.current_session else "secondary",):
+                load_session(session)
+                st.rerun()
         with col2:
             # 删除会话信息
             if st.button("", width="stretch", icon="❌", key=f"delete_{session}"):
@@ -135,11 +147,11 @@ client = OpenAI(
     max_retries=2    # SDK自动重试2次网络错误
 )
 
+# 展示聊天信息
+st.text(f"会话名称：{st.session_state.current_session}")
 # 遍历会话状态中的消息
 for message in st.session_state.messages:
   st.chat_message(message["role"]).write(message["content"])
-
-
 
 # 消息输入框
 message = st.chat_input("请输入你要问的题：")
@@ -166,3 +178,8 @@ if message:
             response_message.chat_message("assistant").write(full_response)
     # 保存AI大模型的回复
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+    #保存会话
+    save_session()
+    load_session(st.session_state.current_session)
+    st.rerun()
