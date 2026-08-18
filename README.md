@@ -11,7 +11,7 @@
 
 ## 📸 界面截图
 
-![主界面](img/screenshot.png)
+<img width="1920" height="910" alt="image" src="https://github.com/user-attachments/assets/113f068b-b102-485d-8ea8-eec9ada2c117" />
 
 ## 🛠️ 技术栈
 
