@@ -39,7 +39,7 @@ def load_sessions():
         for filename in file_list:
             if filename.endswith(".json"):
                 session_list.append(filename[:-5])
-
+    session_list.sort(reverse=True)
     return session_list
 
 # 初始化聊天信息
@@ -140,6 +140,9 @@ with st.sidebar:
             if st.button("", width="stretch", icon="❌", key=f"delete_{session}"):
                delete_session(session)
                st.rerun()
+
+    # 分割线
+    st.divider()
 
     st.subheader("伴侣信息")
     # 昵称输入框
