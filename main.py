@@ -71,6 +71,17 @@ def load_session(session_name):
     except Exception:
         st.error("加载会话失败！")
 
+# 删除会话
+def delete_session(session_name):
+    try:
+        if os.path.exists(f"sessions/{session_name}.json"):
+            os.remove(f"sessions/{session_name}.json") # 删除文件
+            if session_name == st.session_state.current_session:
+                st.session_state.messages = []
+                st.session_state.current_session = generate_session_name()
+    except Exception:
+        st.error("删除会话失败！")
+
 # 设置页面的配置项
 st.set_page_config(
     page_title="AI智能伴侣",
@@ -127,7 +138,8 @@ with st.sidebar:
         with col2:
             # 删除会话信息
             if st.button("", width="stretch", icon="❌", key=f"delete_{session}"):
-                pass
+               delete_session(session)
+               st.rerun()
 
     st.subheader("伴侣信息")
     # 昵称输入框
