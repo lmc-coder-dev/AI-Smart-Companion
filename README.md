@@ -77,7 +77,6 @@ AI-Smart-Companion/
 ├── requirements.txt     # 依赖清单
 ├── img/
 │   ├── img.png          # 页面图标
-│   └── screenshot.png   # 界面截图
 ├── sessions/            # 会话数据（本地生成，已加入 .gitignore）
 └── README.md
 ```
